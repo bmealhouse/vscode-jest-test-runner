@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/quotes */
 import {
   bold,
   black,

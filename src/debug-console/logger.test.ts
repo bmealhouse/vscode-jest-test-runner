@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/quotes */
 import {logger} from './logger'
 
 test('returns text without no formatting', () => {

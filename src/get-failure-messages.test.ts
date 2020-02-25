@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/quotes */
 import {AggregatedResult, TestResult} from '@jest/test-result'
 import getFailureMessages from './get-failure-messages'
 
