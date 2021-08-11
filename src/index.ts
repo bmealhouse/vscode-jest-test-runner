@@ -1,30 +1,26 @@
-import {runCLI} from '@jest/core'
-import * as sourceMapSupport from 'source-map-support'
+import path from 'path'
+import {run as runJest} from 'jest-cli'
 import {logger} from './debug-console/logger'
-import createJestConfig from './create-jest-config'
-import getFailureMessages from './get-failure-messages'
 
+// const rootDir = path.resolve(process.cwd(), '../../')
 const rootDir = new URL('../../../', import.meta.url).pathname
-const pkgDir = new URL('../', import.meta.url).pathname
 
-export async function run(
-  _testRoot: string,
-  callback: (error: Error | null, failures?: any) => void,
-): Promise<void> {
-  sourceMapSupport.install()
+export async function run(): Promise<void> {
+  process.stdout.write = (text: string) => Boolean(logger(text))
+  process.stderr.write = (text: string) => Boolean(logger(text))
 
-  process.stdout.write = logger as any
-  process.stderr.write = logger as any
-
-  try {
-    // prettier-ignore
-    const {results} = await (runCLI as any)(
-      createJestConfig(rootDir, pkgDir),
-      [rootDir]
-    )
-
-    callback(null, getFailureMessages(results))
-  } catch (error) {
-    callback(error)
+  let args: string[] = []
+  if (process.env.JEST_ARGS) {
+    args = JSON.parse(process.env.JEST_ARGS)
   }
+
+  args.push(
+    '--runInBand',
+    '--env=vscode',
+    '--colors',
+    '--verbose',
+    `--setupFilesAfterEnv=${path.resolve(__dirname, './setup.js')}`,
+  )
+
+  await runJest(args, rootDir)
 }
